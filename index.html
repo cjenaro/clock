@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Clock!</title>
+  </head>
+  <body>
+    <style>
+      body {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-image: url('./clock.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .clock {
+        position: relative;
+        height: 200px;
+        width: 200px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        border-color: #000000;
+        border-width: 5px;
+        border-style: solid;
+      }
+
+      .hand {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 50%;
+        height: 4px;
+        background: #000000;
+        transform-origin: 100%;
+        transform: rotate(90deg);
+        transition: transform 0.2s cubic-bezier(0, 1.73, 0.36, 1);
+      }
+
+      .hour-hand {
+        width: 25%;
+        left: 25%;
+      }
+
+      .seconds-hand {
+        height: 2px;
+      }
+
+      .toggle {
+        position: absolute;
+        top: 15px;
+        right: 40px;
+        text-decoration: underline;
+      }
+    </style>
+
+    <div class="toggle">
+      <p>Press the <strong>spacebar</strong> to toggle clock sounds!</p>
+    </div>
+
+    <div class="text">
+      <h1>The time is: <span class="time"></span></h1>
+    </div>
+    <div class="clock">
+      <div class="hand hour-hand"></div>
+      <div class="hand minutes-hand"></div>
+      <div class="hand seconds-hand"></div>
+    </div>
+
+    <audio id="tick" src="./tick.wav"></audio>
+    <audio id="tack" src="./tack.wav"></audio>
+
+    <script>
+      const hoursHand = document.querySelector('.hour-hand')
+      const minutesHand = document.querySelector('.minutes-hand')
+      const secondsHand = document.querySelector('.seconds-hand')
+      const time = document.querySelector('.time')
+      const tick = document.querySelector('#tick')
+      const tack = document.querySelector('#tack')
+      let ticking = true
+      let playSound = false
+
+      const setTime = () => {
+        const now = new Date()
+
+        const seconds = now.getSeconds()
+        const secondsDegrees = (seconds / 60) * 360 + 90
+        const minutes = now.getMinutes()
+        const minutesDegrees = (minutes / 60) * 360 + 90
+        const hours = now.getHours()
+        const hoursDegrees = (hours / 60) * 360 + 90
+
+        if (playSound) {
+          if (ticking) {
+            tick.play()
+          } else {
+            tack.play()
+          }
+          ticking = !ticking
+        }
+        secondsHand.style.transform = `rotate(${secondsDegrees}deg)`
+        minutesHand.style.transform = `rotate(${minutesDegrees}deg)`
+        hoursHand.style.transform = `rotate(${hoursDegrees}deg)`
+
+        const displaySeconds =
+          (seconds + '').length < 2 ? '0' + seconds : seconds
+        const displayMinutes =
+          (minutes + '').length < 2 ? '0' + minutes : minutes
+        const displayHours = (hours + '').length < 2 ? '0' + hours : hours
+
+        time.innerHTML = `${displayHours}:${displayMinutes}:${displaySeconds}`
+      }
+
+      window.addEventListener('keydown', e => {
+        if (e.keyCode === 32) {
+          playSound = !playSound
+        }
+      })
+      setInterval(setTime, 1000)
+    </script>
+  </body>
+</html>
